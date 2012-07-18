@@ -35,6 +35,8 @@ import lang::derric::BuildValidator;
 import lang::derric::GenerateJava;
 import lang::derric::GenerateFactoryJava;
 import lang::derric::OutlineFormat;
+import lang::derric::Visualize;
+import vis::Render;
 import String;
 import IO;
 
@@ -92,6 +94,17 @@ public void main() {
     edit("Rename structure...", str (Tree pt, loc selection) {
        newName = prompt("Enter new name: ");
        return unparse(rename(pt, selection, newName));
+    }),
+    
+    action("Visualize", void (Tree tree, loc selection) {
+      if (Format f := tree.args[1]) {
+        FileFormat format = build(f);
+        fig = formatToFigure(format);
+        render(fig);
+      }
+      else {
+        alert("Error");
+      }
     })
     
     ])),

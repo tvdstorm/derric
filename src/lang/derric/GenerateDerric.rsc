@@ -83,14 +83,14 @@ public str generate(FileFormat format) {
 	return res;
 }
 
-private str writeField(Field f) {
+public str writeField(Field f) {
 	str res = escape(f.name, mapping);
 	list[Qualifier] overridden = getLocalQualifiers(f);
 	if (isEmpty(overridden) && field(_, _, _, Expression specification) := f && noValue() := f.specification) {
 		res += ";";
 	} else {
 		res += ":";
-		for (Modifier m <- f.modifiers) {
+		for (f has modifiers, Modifier m <- f.modifiers) {
 			switch(m) {
 				case required():;
 				case expected(): res += " expected";
@@ -101,7 +101,7 @@ private str writeField(Field f) {
 		str exp = "";
 		if (field(_, _, _, Expression specification) := f) {
 			exp = writeExpression(specification, true);
-		} else {
+		} else if (f has specifier) {
 			exp = writeContentSpecifier(f.specifier);
 		}
 		if (size(exp) > 0) {
@@ -124,6 +124,7 @@ private str writeField(Field f) {
 }
 
 private list[Qualifier] getLocalQualifiers(Field f) {
+    if (!(f has qualifiers)) return [];
 	return for (Qualifier q <- f.qualifiers) {
 		if ((q@local)?) append q;
 	}
