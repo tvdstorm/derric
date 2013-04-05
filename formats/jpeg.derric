@@ -24,6 +24,7 @@ type integer
 endian big
 strings ascii
 
+
 sequence
   SOI
   PADDING*
@@ -40,7 +41,7 @@ sequence
   EOI?
 
 structures
-SOI {
+OPTIVER {
   marker: 0xFF, 0xD8;
 }
 

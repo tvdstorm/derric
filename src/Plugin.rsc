@@ -49,7 +49,7 @@ str javaPackageName = "org.derric_lang.validator.generated";
 str javaPathPrefix = "derric/src/" + replaceAll(javaPackageName, ".", "/") + "/";
 
 public set[loc] getDerrics() {
-  prefix = "derric/formats";
+  str prefix = "derric/formats";
   result = {};
   for (path <- listEntries(|project://<prefix>|), endsWith(path, ".derric")) {
      println(path);
@@ -183,7 +183,6 @@ public start[Format] xrefFormat(start[Format] pt) {
     case StructureHead h => h[super=h.super[@link=table[h.super]]]
       when h has super, table[h.super]?
   }
-  
   return pt;
 }
 

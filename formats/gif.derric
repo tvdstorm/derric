@@ -36,6 +36,7 @@ sequence
   )
   ZeroBlock?
   (
+  
     [GraphicControlExtension? TableBasedImage CompressedDataBlock* ZeroBlock]
     [GraphicControlExtension? PlainTextExtension DataBlock* ZeroBlock]
     [ApplicationExtension DataBlock* ZeroBlock]

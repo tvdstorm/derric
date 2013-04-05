@@ -79,7 +79,7 @@ private list[Field] makeStructureFields(Field* fields) {
 	for (lang::derric::Syntax::Field f <- fields) {
 		switch (f) {
 			case (Field)`<Id name>;`: results += field("<name>", [], [], noValue())[@location=f@\loc];
-			case (Field)`<Id name>: <ValueModifier* modifiers> <lang::derric::Syntax::ContentSpecifier specifier> <FormatSpecifier* formats>;`: 
+			case (Field)`<Id name>: <ValueModifier* modifiers> <ContentSpecifier specifier> <FormatSpecifier* formats>;`: 
 			   results += field("<name>", makeModifiers(modifiers), makeQualifiers(formats), makeContentSpecifier(specifier))[@location=f@\loc];
 			case (Field)`<Id name>: <ValueModifier* modifiers> <{ Expression "," }+ expressions> <FormatSpecifier* formats>;`: 
 			   results += field("<name>", makeModifiers(modifiers), makeQualifiers(formats), makeExpressionList(expressions))[@location=f@\loc];
@@ -141,7 +141,7 @@ private list[Qualifier] makeQualifiers(FormatSpecifier* qualifiers) {
 			case (FormatSpecifier)`endian <FixedFormatSpecifierValue val>`: append endian("<val>")[@location=specifier@\loc];
 			case (FormatSpecifier)`strings <FixedFormatSpecifierValue val>`: append strings("<val>")[@location=specifier@\loc];
 			case (FormatSpecifier)`type <FixedFormatSpecifierValue val>`: append \type("<val>")[@location=specifier@\loc];
-			case (FormatSpecifier)`size <lang::derric::Syntax::Expression exp>`: append size(makeExpression(exp))[@location=specifier@\loc];
+			case (FormatSpecifier)`size <Expression exp>`: append size(makeExpression(exp))[@location=specifier@\loc];
 			default: throw "makeQualifiers: unmatched FormatSpecifier <specifier>";
 		}
 	}
@@ -153,24 +153,24 @@ private list[Expression] makeExpressionList({ Expression "," }+ expressions) {
 
 private Expression makeExpression(lang::derric::Syntax::Expression expression) {
 	switch (expression) {
-		case (Expression)`(<lang::derric::Syntax::Expression e>)`: return makeExpression(e);
+		case (Expression)`(<Expression e>)`: return makeExpression(e);
 		case (Expression)`<Number n>`: return \value(makeInt(n))[@location=expression@\loc];
 		case (Expression)`<String s>`: return \value(makeString(s))[@location=expression@\loc];
 		case (Expression)`<Id i>`: return ref("<i>")[@location=expression@\loc];
 		case (Expression)`<Id i> . <Id j>`: return ref("<i>", "<j>")[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> ^ <lang::derric::Syntax::Expression r>`: return pow(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> + <lang::derric::Syntax::Expression r>`: return add(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> - <lang::derric::Syntax::Expression r>`: return minus(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> * <lang::derric::Syntax::Expression r>`: return times(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> / <lang::derric::Syntax::Expression r>`: return divide(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `lengthOf ( <Id i> )`: return lengthOf("<i>")[@location=expression@\loc];
-		case `lengthOf ( <Id i> . <Id j> )`: return lengthOf("<i>", "<j>")[@location=expression@\loc];
-		case `offset ( <Id i> )`: return offset("<i>")[@location=expression@\loc];
-		case `offset ( <Id i> . <Id j> )`: return offset("<i>", "<j>")[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> .. <lang::derric::Syntax::Expression r>`: return range(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `<lang::derric::Syntax::Expression l> | <lang::derric::Syntax::Expression r>`: return or(makeExpression(l), makeExpression(r))[@location=expression@\loc];
-		case `! <lang::derric::Syntax::Expression e>`: return not(makeExpression(e))[@location=expression@\loc];
-		case `- <lang::derric::Syntax::Expression e>`: return negate(makeExpression(e))[@location=expression@\loc];
+		case (Expression)`<Expression l> ^ <Expression r>`: return pow(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`<Expression l> + <Expression r>`: return add(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`<Expression l> - <Expression r>`: return minus(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`<Expression l> * <Expression r>`: return times(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`<Expression l> / <Expression r>`: return divide(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`lengthOf ( <Id i> )`: return lengthOf("<i>")[@location=expression@\loc];
+		case (Expression)`lengthOf ( <Id i> . <Id j> )`: return lengthOf("<i>", "<j>")[@location=expression@\loc];
+		case (Expression)`offset ( <Id i> )`: return offset("<i>")[@location=expression@\loc];
+		case (Expression)`offset ( <Id i> . <Id j> )`: return offset("<i>", "<j>")[@location=expression@\loc];
+		case (Expression)`<Expression l> .. <Expression r>`: return range(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`<Expression l> | <Expression r>`: return or(makeExpression(l), makeExpression(r))[@location=expression@\loc];
+		case (Expression)`! <Expression e>`: return not(makeExpression(e))[@location=expression@\loc];
+		case (Expression)`- <Expression e>`: return negate(makeExpression(e))[@location=expression@\loc];
 	}
 }
 

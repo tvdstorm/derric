@@ -19,7 +19,11 @@ module lang::derric::FileFormat
 
 import List;
 
-data FileFormat = format(str name, list[str] extensions, list[Qualifier] defaults, list[Symbol] sequence, list[Term] terms);
+data FileFormat 
+  = format(str name, list[str] extensions, 
+       list[Qualifier] defaults, 
+       list[Symbol] sequence, 
+       list[Term] terms);
 
 data Symbol = term(str name)
 	| optional(Symbol symbol)
@@ -38,21 +42,29 @@ data Qualifier = unit(str name)
 data Term = term(str name, list[Field] fields)
 	| term(str name, str source, list[Field] fields);
 
-data Field = field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, list[Expression] specifications)
-           | field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, Expression specification)
-           | field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, ContentSpecifier specifier)
-           | field(str name, list[Field] fields);
+data Field 
+= field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, list[Expression] specifications)
+   | field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, Expression specification)
+   | field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, ContentSpecifier specifier)
+   | field(str name, list[Field] fields);
 
-data ContentSpecifier = specifier(str name, list[tuple[str, list[Specification]]] arguments);
+data ContentSpecifier 
+= specifier(str name, list[tuple[str, list[Specification]]] arguments);
 
 data Specification = const(str s)
 	| const(int i)
     | field(str name)
-    | field(str struct, str name);
+    | field(str struct, str name)
+    | string(str s)
+    | number(str n)
+    ;
 
 data Modifier = required()
 	| expected()
-	| terminator(bool includeTerminator);
+	| terminator(bool includeTerminator)
+	| terminatedBefore()
+	| terminatedBy()
+	;
 
 data Expression = ref(str name)
     | ref(str struct, str name)
@@ -71,7 +83,10 @@ data Expression = ref(str name)
 	| or(Expression lhs, Expression rhs)
 	| range(Expression from, Expression to)
 	| negate(Expression exp)
-	| noValue();
+	| noValue()
+	| string(str s)
+	| number(str n)
+	;
 	
 anno loc FileFormat@location;
 anno loc Symbol@location;
