@@ -21,15 +21,15 @@ start syntax FileFormat
   = @Foldable format: "format" Id name 
       "extension" Id+ extensions 
       Qualifier* defaults
-      "sequence" DSymbol* sequence 
+      "sequence" Symbol* sequence 
       "structures" Term* terms;
 
-syntax DSymbol 
-  = anyOf: "(" DSymbol+ ")"
-  | seq: "[" DSymbol* "]"
-  | right not: "!" DSymbol
-  > iter: DSymbol "*"
-  | optional: DSymbol "?"
+syntax Symbol 
+  = anyOf: "(" Symbol+ ")"
+  | seq: "[" Symbol* "]"
+  | right not: "!" Symbol
+  > iter: Symbol "*"
+  | optional: Symbol "?"
   | term: Id
   ;
 
@@ -50,7 +50,7 @@ syntax Term
 syntax Field 
   = field: Id name ":" FieldModifier* modifiers ";"
   | field: Id name ";"
-  | Id name ":" "{" Field* fields "}"
+  | field: Id name ":" "{" Field* fields "}"
   ;
 
 syntax FieldModifier
@@ -85,14 +85,14 @@ syntax Modifier
   | terminatedBy: "terminatedBy";
 
 
-syntax Bool
+lexical Bool
   = "true"
   | "false"
   ;
 
 //syntax Qualifiers = @Foldable Qualifier*;
 //syntax Structures = @Foldable "structures" Structure*;
-//syntax Sequence = @Foldable "sequence" DSymbol*;
+//syntax Sequence = @Foldable "sequence" Symbol*;
 
 
 
@@ -112,10 +112,12 @@ lexical CommentChar = ![*] | [*] !>> [/];
 syntax Expression = number: Number
                   | string: String
                   | ref: ExpressionId
-                  | ExtRef: ExpressionId "." ExpressionId
-                  | Bracket: "(" Expression ")"
-                  | LocalCall: BuiltIn "(" ExpressionId ")"
-                  | GlobalCall: BuiltIn "(" ExpressionId "." ExpressionId ")"
+                  | ref: ExpressionId "." ExpressionId
+                  | bracket "(" Expression ")"
+                  | offset: "offset" "(" ExpressionId ")"
+                  | offset: "offset" "(" ExpressionId "." ExpressionId ")"
+                  | lengthOf: "lengthOf" "(" ExpressionId ")"
+                  | lengthOf: "lengthOf" "(" ExpressionId "." ExpressionId ")"
                   | negate: "-" Expression
                   | not: "!" Expression 
                   > left pow: Expression "^" Expression
@@ -125,8 +127,6 @@ syntax Expression = number: Number
                          | minus: Expression "-" Expression)
                   > non-assoc range: Expression ".." Expression
                   > left or: Expression "|" Expression;
-
-syntax BuiltIn = "lengthOf" | "offset";
 
 layout LAYOUTLIST = LAYOUT* !>> [\t-\n \r \ ];
 lexical LAYOUT = whitespace: [\t-\n \r \ ] | Comment;

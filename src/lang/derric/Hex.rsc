@@ -57,7 +57,7 @@ public void show(loc derricFile, loc inputFile) {
                     return true;
                 }
                 return false;
-            }))] | i <- [0..size(result[1])-1]];
+            }))] | i <- [0..size(result[1])]];
         return box(
                     grid(
                         lines,
@@ -83,7 +83,7 @@ public void show(loc derricFile, loc inputFile) {
                             edit(result[1][activeStructure][1], [highlight(result[1][activeStructure][1].begin.line, "Sequence"), highlight(result[1][activeStructure][2].begin.line, "Structure"), highlight(result[1][activeStructure][4][j][1].begin.line, "Field")]);
                         }
 	    			    return true;
-	    		    }))] | j <- [0..size(result[1][activeStructure][4])-1]];
+	    		    }))] | j <- [0..size(result[1][activeStructure][4])]];
 	    	return box(
                 grid(
                     lines,
@@ -107,7 +107,7 @@ public void show(loc derricFile, loc inputFile) {
             size(20, 10),
             resizable(false),
             fillColor(Color () {
-                for (s <- [0..size(result[1])-1], s == activeStructure, i >= result[1][s][3].offset, i < result[1][s][3].offset+result[1][s][3].length) {
+                for (s <- [0..size(result[1])], s == activeStructure, i >= result[1][s][3].offset, i < result[1][s][3].offset+result[1][s][3].length) {
                     if (activeField < size(result[1][s][4]) && i >= result[1][s][4][activeField][2].offset && i < result[1][s][4][activeField][2].offset+result[1][s][4][activeField][2].length) {
                 	   return selectFieldColor;
                 	} else {
@@ -117,8 +117,8 @@ public void show(loc derricFile, loc inputFile) {
                 return baseColor;
             }),
             onMouseDown(bool (int b, map[KeyModifier, bool] m) {
-                for (s <- [0..size(result[1])-1], i >= result[1][s][3].offset, i < result[1][s][3].offset+result[1][s][3].length) {
-                    for (f <- [0..size(result[1][s][4])-1], i >= result[1][s][4][f][2].offset, i < result[1][s][4][f][2].offset+result[1][s][4][f][2].length) {
+                for (s <- [0..size(result[1])], i >= result[1][s][3].offset, i < result[1][s][3].offset+result[1][s][3].length) {
+                    for (f <- [0..size(result[1][s][4])], i >= result[1][s][4][f][2].offset, i < result[1][s][4][f][2].offset+result[1][s][4][f][2].length) {
                         if (b == 1) {
                             activeStructure = s;
                             activeField = f;
@@ -134,9 +134,9 @@ public void show(loc derricFile, loc inputFile) {
         );
     
     Figure makeHexView() {
-        lines = for (i <- [0 .. (size(bytes) / 16)]) {
+        lines = for (i <- [0 .. (size(bytes) / 16) + 1]) {
             line = [box(text("<toHex32(i*16)>"), fillColor("LightGray"), size(60, 10), resizable(false))];
-            line += for (j <- [0 .. 15], (i*16)+j < size(bytes)) {
+            line += for (j <- [0 .. 16], (i*16)+j < size(bytes)) {
                 append makeCell((i*16)+j);
             }
             if (size(line) > 1) {

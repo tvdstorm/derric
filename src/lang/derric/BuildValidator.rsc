@@ -135,6 +135,7 @@ public Validator build(FileFormat format) {
 		struct = t.name;
 		statements = [];
 		for (f <- t.fields) {
+		    println("BUILDING field: <f>");
 			buildStatements(f);
 		}
 		structures += structure(t.name, statements)[@location=t@location];
@@ -238,7 +239,7 @@ private Modifier getTerminator(list[Modifier] modifiers) {
 
 private bool lastField(FileFormat format, str struct, str field) {
 	for (t <- format.terms, t.name == struct) {
-		for (i <- [0..size(t.fields)-1]) {
+		for (i <- [0..size(t.fields)]) {
 			if (t.fields[i].name == field, i+1 == size(t.fields)) {
 				return true;
 			}

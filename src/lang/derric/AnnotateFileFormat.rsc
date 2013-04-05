@@ -38,7 +38,7 @@ public FileFormat annotate(FileFormat format) {
 
 public FileFormat annotateSymbols(FileFormat format) {
 	bool allowEOF = true;
-	for (i <- [size(format.sequence)-1..0]) {
+	for (i <- [size(format.sequence)-1..-1]) {
 		if (anyOf(set[Symbol] symbols) := format.sequence[i]) {
 			if (seq([]) notin symbols) {
 				allowEOF = false;
@@ -130,7 +130,7 @@ private rel[str, str, Dependency] makeDependencyEnvironment(FileFormat format, b
 	
 	void makeRef(str struct, str name) {
 		if (struct == sname && isEmpty(order[sname, name])) {
-			env += <sname, fname, name>;
+			env += {<sname, fname, name>};
 		}
 	}
 
@@ -141,7 +141,7 @@ private rel[str, str, Dependency] makeDependencyEnvironment(FileFormat format, b
 		}
 		case field(str name, _, _, _): {
 			fname = name;
-			order += <sname, fname, count>;
+			order += {<sname, fname, count>};
 			count += 1;
 		}
 		case ref(str struct, str name): if (values) makeRef(struct, name);
@@ -152,7 +152,9 @@ private rel[str, str, Dependency] makeDependencyEnvironment(FileFormat format, b
 		case field(str name): if (values) makeRef(sname, name);
 	}
 	for (<str struct, str field> <- env<0, 1>) {
-		int max = max(order[struct, env[struct, field]]);
+	    s = order[struct, env[struct, field]];
+	    // FIXME: how should this work???
+		int max = s != {} ? max(s) : 0;
 		Dependency dep = dependency([v | t <- order, <struct, str v, max> := t][0]);
 		deps += <struct, field, dep>;
 	}

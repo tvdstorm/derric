@@ -147,10 +147,10 @@ private FileFormat removeMultipleExpressions(FileFormat format) {
 	list[Field] expandMultipleExpressions(list[Field] fields) {
 		return ret:for (f <- fields) {
 			if (field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, list[Expression] specifications) := f) {
-				for (i <- [1..size(specifications)]) {
+				for (i <- [0..size(specifications)]) {
 					str fname = name;
-					if (i > 1) fname = name + "*<i>";
-					append ret: field(fname, modifiers, qualifiers, specifications[i-1])[@location=f@location];
+					if (i > 0) fname = name + "*<i+1>";
+					append ret: field(fname, modifiers, qualifiers, specifications[i])[@location=f@location];
 				}
 			} else append f;
 		}
@@ -172,9 +172,9 @@ private FileFormat removeStrings(FileFormat format) {
 				qualifiers[4].\type = "integer";
 				qualifiers[5].count = \value(1);
 				int count = 0;
-				for (i <- [0..size(v)-1]) {
+				for (i <- [0..size(v)]) {
 					str fname = name;
-					if (i > 0) fname = name + "*s<i>";
+					if (i > 0) fname = name + "*s<i + 1>";
 					append ret: field(fname, modifiers, qualifiers, \value(ascii[v[i]]))[@location=f@location];
 					count += 1;
 				}
