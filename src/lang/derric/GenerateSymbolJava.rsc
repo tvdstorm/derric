@@ -21,21 +21,26 @@ import IO;
 import List;
 import Set;
 
+import lang::derric::AnnotateFileFormat;
 import lang::derric::FileFormat;
 
-int label = 0;
+int label;
+
+public void initLabel() {
+	label = 0;
+}
 
 private int getNextLabel() {
 	label += 1;
 	return label;
 }
 
-public str generateSymbol(iter(anyOf(set[Symbol] symbols))) {
-	return "top<getNextLabel()>: for (;;) {\n<generateAnyOfSymbols(symbols, true)>break top<label>;\n}\n";
+public str generateSymbol(s:iter(anyOf(set[Symbol] symbols))) {
+	return "top<getNextLabel()>: for (;;) {\n<generateEOFCheck(s@allowEOF)><generateAnyOfSymbols(symbols, true)>mergeSubSequence();break top<label>;\n}\n";
 }
 
-public str generateSymbol(anyOf(set[Symbol] symbols)) {
-	return "top<getNextLabel()>: for (;;) {\n<generateAnyOfSymbols(symbols, false)><containsEmptyList(symbols) ? "break top<label>" : "return no()">;\n}\n";
+public str generateSymbol(s:anyOf(set[Symbol] symbols)) {
+	return "top<getNextLabel()>: for (;;) {\n<generateEOFCheck(s@allowEOF)><generateAnyOfSymbols(symbols, false)><containsEmptyList(symbols) ? "mergeSubSequence();break top<label>" : "return no()">;\n}\n";
 }
 
 public default str generateSymbol(Symbol symbol) {
@@ -48,19 +53,20 @@ private str generateAnyOfSymbols(set[Symbol] symbols, bool iterate) {
 
 	void generateAnyOfSymbol(Symbol s, bool final) {
 		//println("generating: <s>");
-		str breakTarget = final ? "break top<label>" : "break";
+		str breakTarget = final ? "mergeSubSequence();<iterate ? "continue" : "break"> top<label>" : "break";
+		str continueStatement = final ? "mergeSubSequence();continue" : "continue";
 		//println(breakTarget);
 		if (res == "") {
 			switch (s) {
-				case term(str name): res += "if (parse<name>()) { <iterate ? "continue" : breakTarget>; }\n";
-				case optional(term(str name)): res += "parse<name>();\n<iterate ? "continue" : breakTarget>;\n";
-				case iter(term(str name)): res += "for (;;) {\nif (parse<name>()) { continue; }\n<breakTarget>;\n}\n";
+				case term(str name): res += "if (parse<name>()) { <iterate ? continueStatement : breakTarget>; }\n";
+				case optional(term(str name)): res += "parse<name>();\n<iterate ? continueStatement : breakTarget>;\n";
+				case iter(term(str name)): res += "for (;;) {\nif (parse<name>()) { <continueStatement>; }\n<breakTarget>;\n}\n";
 			}
 		} else {
 			switch (s) {
 				case term(str name): res = "if (parse<name>()) {\n<res>}\n";
 				case optional(term(str name)): res = "parse<name>();\n<res>";
-				case iter(term(str name)): res = "for (;;) {\nif (parse<name>()) { continue; }\n<breakTarget>;\n}\n<res>";
+				case iter(term(str name)): res = "for (;;) {\nif (parse<name>()) { <continueStatement>; }\n<breakTarget>;\n}\n<res>";
 			}
 		}
 	}
@@ -76,7 +82,7 @@ private str generateAnyOfSymbols(set[Symbol] symbols, bool iterate) {
 			sequence = tail(sequence);
 		}
 		if (res != "") {
-			fin += "_input.mark();\n" + res + "_input.reset();";
+			fin += "_input.mark();\n" + res + "clearSubSequence();_input.reset();";
 		}
 		res = "";
 	}
@@ -90,4 +96,8 @@ private bool containsEmptyList(set[Symbol] symbols) {
 		}
 	}
 	return false;
+}
+
+private str generateEOFCheck(bool allowEOF) {
+	return "if (_input.atEOF()) { return <allowEOF ? "yes" : "no">(); } allowEOF = <allowEOF>;";
 }

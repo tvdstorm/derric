@@ -23,10 +23,16 @@ public abstract class Validator {
 	private final String _name;
 	protected ValidatorInputStream _input;
 	protected long _startLocation;
+	protected String _currentSymbol;
+	protected String _currentSequence;
+	private String _currentSubSequence;
 
 	public Validator(String name) {
 		_name = name;
 		_startLocation = 0;
+		_currentSymbol = "";
+		_currentSequence = "";
+		_currentSubSequence = "";
 	}
 
 	public String getName() {
@@ -56,12 +62,25 @@ public abstract class Validator {
 		_startLocation = _input.lastLocation();
 	}
 
+	protected void addSubSequence(String name) {
+	  _currentSubSequence += name;
+	}
+
+	protected void clearSubSequence() {
+	  _currentSubSequence = "";
+	}
+	
+	protected void mergeSubSequence() {
+	  _currentSequence += " " + _currentSubSequence;
+	  _currentSubSequence = "";
+	}
+
 	protected ParseResult yes() {
-		return new ParseResult(true, _input.lastLocation(), _input.lastRead());
+		return new ParseResult(true, _input.lastLocation(), _input.lastRead(), _currentSymbol, _currentSequence);
 	}
 
 	protected ParseResult no() {
-		return new ParseResult(false, _input.lastLocation(), _input.lastRead());
+		return new ParseResult(false, _input.lastLocation(), _input.lastRead(), _currentSymbol, _currentSequence);
 	}
 	
 	protected boolean noMatch() {

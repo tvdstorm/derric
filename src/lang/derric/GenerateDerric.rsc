@@ -47,7 +47,7 @@ public str generate(FileFormat format) {
 			case endian(str name): res += "endian <name>\n";
 			case strings(str encoding): res += "strings <encoding>\n";
 			case \type(str \type): res += "type <\type>\n";
-			case size(Expression count): res += "size <writeExpression(count)>\n";
+			case size(Expression count): res += "size <writeExpression(count, true)>\n";
 		}
 	}
 	if (qualifierWritten) {
@@ -164,7 +164,7 @@ private str writeSpecification(list[Specification] ls) {
 	return ret;
 }
 
-private str writeSymbol(Symbol s) {
+public str writeSymbol(Symbol s) {
 	switch(s) {
 		case term(str name): return name;
 		case optional(Symbol symbol): return "<writeSymbol(symbol)>?";
@@ -193,7 +193,7 @@ private str writeExpression(Expression exp, bool top) {
 		case offset(str struct, str name): return "offset(<struct>.<escape(name, mapping)>)";
 		case or(Expression l, Expression r): return "<writeExpression(l, false)>|<writeExpression(r, false)>";
 		case range(Expression f, Expression t): return "<top ? "" : "("><writeExpression(f, false)>..<writeExpression(t, false)><top ? "" : ")">";
-		case negate(Expression e): return "-<top ? "" : "("><writeExpression(r)><top ? "" : ")">";
+		case negate(Expression e): return "-<top ? "" : "("><writeExpression(e, false)><top ? "" : ")">";
 	}
 	return "";
 }

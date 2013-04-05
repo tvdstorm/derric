@@ -18,9 +18,12 @@
 module lang::derric::AnnotateFileFormat
 
 import IO;
+import List;
 import Set;
 
 import lang::derric::FileFormat;
+
+anno bool Symbol @ allowEOF;
 
 data Reference = local() | global();
 data Dependency = dependency(str name);
@@ -30,6 +33,23 @@ anno Dependency Field @ refdep;
 anno Dependency Field @ sizedep;
 
 public FileFormat annotate(FileFormat format) {
+	return annotateSymbols(annotateFieldReferences(format));
+}
+
+public FileFormat annotateSymbols(FileFormat format) {
+	bool allowEOF = true;
+	for (i <- [size(format.sequence)-1..0]) {
+		if (anyOf(set[Symbol] symbols) := format.sequence[i]) {
+			if (seq([]) notin symbols) {
+				allowEOF = false;
+			}
+		}
+		format.sequence[i]@allowEOF = allowEOF;
+	}
+	return format;
+}
+
+public FileFormat annotateFieldReferences(FileFormat format) {
 	rel[str, str, Reference] refenv = makeReferenceEnvironment(format, true);
 	rel[str, str, Reference] sizeenv = makeReferenceEnvironment(format, false);
 	rel[str, str, Dependency] refdepenv = makeDependencyEnvironment(format, true);
@@ -39,14 +59,21 @@ public FileFormat annotate(FileFormat format) {
 		case term(str name, _): sname = name;
 		case f:field(str name, _, _, _): {
 			set[Reference] annotation = refenv[sname, name];
-			if (size(annotation) == 1) {
+			if (size(annotation) > 0, global() in annotation) {
 				//println("Adding value reference to <sname>.<name>");
-				f@ref = getOneFrom(annotation);
+				f@ref = global();
+			} else if (size(annotation) > 0){
+				//println("Adding value reference to <sname>.<name>");
+				f@ref = local();
 			}
+			
 			annotation = sizeenv[sname, name];
-			if(size(annotation) == 1) {
+			if(size(annotation) > 0, global() in annotation) {
 				//println("Adding size reference to <sname>.<name>");
-				f@size = getOneFrom(annotation);
+				f@size = global();
+			} else if (size(annotation) > 0) {
+				//println("Adding size reference to <sname>.<name>");
+				f@size = local();
 			}
 			set[Dependency] dependency = refdepenv[sname, name];
 			if (size(dependency) == 1) {
@@ -71,10 +98,8 @@ private rel[str, str, Reference] makeReferenceEnvironment(FileFormat format, boo
 	
 	void makeRef(str struct, str name) {
 		if (struct != sname) {
-			//println("<struct>.<name> is referenced globally.");
 			env += <struct, name, global()>;
-		} else if (!isEmpty(order[sname, name])) {
-			//println("<sname>.<name> is referenced locally.");
+		} else /*if (!isEmpty(order[sname, name]))*/ {
 			env += <sname, name, local()>;
 		}
 	}
@@ -105,7 +130,6 @@ private rel[str, str, Dependency] makeDependencyEnvironment(FileFormat format, b
 	
 	void makeRef(str struct, str name) {
 		if (struct == sname && isEmpty(order[sname, name])) {
-			//println("<sname>.<name> has a local forward reference.");
 			env += <sname, fname, name>;
 		}
 	}
@@ -128,9 +152,6 @@ private rel[str, str, Dependency] makeDependencyEnvironment(FileFormat format, b
 		case field(str name): if (values) makeRef(sname, name);
 	}
 	for (<str struct, str field> <- env<0, 1>) {
-		//println("<struct>.<field>");
-		//println("order: <order>");
-		//println("env: <env>");
 		int max = max(order[struct, env[struct, field]]);
 		Dependency dep = dependency([v | t <- order, <struct, str v, max> := t][0]);
 		deps += <struct, field, dep>;

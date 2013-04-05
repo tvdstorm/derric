@@ -39,12 +39,12 @@ data Statement =
 | skipValue(Type \type)
 | skipBuffer(str sizeVar)
 | validate(str varName, list[VExpression] expOptions)
-| validateContent(str varName, str lenName, str method, map[str, str] custom, map[str, list[VExpression]] references);
+| validateContent(str varName, str lenName, str method, map[str, str] custom, map[str, list[VExpression]] references, bool allowEOF);
 
 data VExpression =
   var(str name)
 | con(int intValue)
-| con(real realValue)
+//| con(real realValue)
 | sub(VExpression lhs, VExpression rhs)
 | add(VExpression lhs, VExpression rhs)
 | fac(VExpression lhs, VExpression rhs)
@@ -61,3 +61,14 @@ data Type =
 data Endianness =
   little()
 | big();
+
+anno loc Validator@location;
+anno loc Global@location;
+anno loc Structure@location;
+anno loc Statement@location;
+anno loc VExpression@location;
+anno loc Type@location;
+anno loc Endianness@location;
+
+anno str Statement@fieldName;
+anno str Global@fieldName;
