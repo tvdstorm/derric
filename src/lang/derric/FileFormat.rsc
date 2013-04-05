@@ -22,31 +22,48 @@ import List;
 data FileFormat 
   = format(str name, list[str] extensions, 
        list[Qualifier] defaults, 
-       list[Symbol] sequence, 
+       list[DSymbol] sequence, 
        list[Term] terms);
 
-data Symbol = term(str name)
-	| optional(Symbol symbol)
-	| iter(Symbol symbol)
-	| not(Symbol symbol)
-	| anyOf(set[Symbol] symbols)
-	| seq(list[Symbol] symbolSequence);
+data DSymbol 
+  = term(str name)
+  | optional(DSymbol symbol)
+  | iter(DSymbol symbol)
+  | not(DSymbol symbol)
+  | anyOf(list[DSymbol] symbols)
+  | seq(list[DSymbol] sequence)
+  ;
 
-data Qualifier = unit(str name)
-	| sign(bool present)
-	| endian(str name)
-	| strings(str encoding)
-	| \type(str \type)
-	| size(Expression count);
+data Qualifier 
+  = unit(str name)
+  | sign(bool present)
+  | endian(str name)
+  | strings(str encoding)
+  | \type(str \type)
+  | size(Expression count)
+  ;
 
-data Term = term(str name, list[Field] fields)
-	| term(str name, str source, list[Field] fields);
+data Term 
+  = term(str name, list[Field] fields)
+  | term(str name, str source, list[Field] fields)
+  ;
 
 data Field 
-= field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, list[Expression] specifications)
+  =  field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, list[Expression] specifications)
    | field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, Expression specification)
    | field(str name, list[Modifier] modifiers, list[Qualifier] qualifiers, ContentSpecifier specifier)
-   | field(str name, list[Field] fields);
+   | field(str name, list[Field] fields)
+   // Normalize these to the above
+   | field(str name, list[FieldModifier] fmodifiers)
+   | field(str name)
+   ;
+   
+data FieldModifier
+  = modifier(Modifier modifier)
+  | qualifier(Qualifier qualifier)
+  | content(ContentSpecifier specifier)
+  | expressions(list[Expression] expressions)
+  ;
 
 data ContentSpecifier 
 = specifier(str name, list[tuple[str, list[Specification]]] arguments);
@@ -59,14 +76,16 @@ data Specification = const(str s)
     | number(str n)
     ;
 
-data Modifier = required()
+data Modifier 
+    = required()
 	| expected()
 	| terminator(bool includeTerminator)
 	| terminatedBefore()
 	| terminatedBy()
 	;
 
-data Expression = ref(str name)
+data Expression 
+    = ref(str name)
     | ref(str struct, str name)
 	| not(Expression exp)
 	| pow(Expression base, Expression exp)
@@ -89,7 +108,7 @@ data Expression = ref(str name)
 	;
 	
 anno loc FileFormat@location;
-anno loc Symbol@location;
+anno loc DSymbol@location;
 anno loc Qualifier@location;
 anno loc Term@location;
 anno loc Field@location;

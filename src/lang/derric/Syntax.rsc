@@ -20,16 +20,16 @@ module lang::derric::Syntax
 start syntax FileFormat 
   = @Foldable format: "format" Id name 
       "extension" Id+ extensions 
-      Qualifiers defaults
-      Sequence sequence 
-      Structures terms;
+      Qualifier* defaults
+      "sequence" DSymbol* sequence 
+      "structures" Term* terms;
 
-syntax Symbol 
-  = anyOf: "(" Symbol+ ")"
-  | seq: "[" Symbol* "]"
-  | right not: "!" Symbol
-  > iter: Symbol "*"
-  | optional: Symbol "?"
+syntax DSymbol 
+  = anyOf: "(" DSymbol+ ")"
+  | seq: "[" DSymbol* "]"
+  | right not: "!" DSymbol
+  > iter: DSymbol "*"
+  | optional: DSymbol "?"
   | term: Id
   ;
 
@@ -37,29 +37,33 @@ syntax Qualifier
   = unit: "unit" Id name
   | sign: "sign" Bool present
   | endian: "endian" Id name
-  | strings: "strings" Id type
-  | \type: "size" Expression count
+  | strings: "strings" Id encoding
+  | \type: "type" Id type
+  | size: "size" Expression count
   ;
 
-syntax Structure
+syntax Term
    = @Foldable term: Id name "{" Field* fields "}"
    | @Foldable term: Id name "=" Id super "{" Field* fields "}"
    ;
    
 syntax Field 
-  = field: Id name ":" 
-        Modifier* modifiers 
-        Qualifier* qualifiers 
-        {Expression ","}* specifications ";"
-  | Id name 
-        Modifier* modifiers 
-        Qualifier* qualifiers 
-        ContentSpecifier specifier ";"
+  = field: Id name ":" FieldModifier* modifiers ";"
+  | field: Id name ";"
   | Id name ":" "{" Field* fields "}"
   ;
 
+syntax FieldModifier
+  = modifier: Modifier
+  // follow-rest. needed for things like size length-x, 
+  // which can be size(length) -x, size(lenght - x)
+  | qualifier: Qualifier !>> [\-] 
+  | content: ContentSpecifier
+  | expressions: {Expression ","}+  
+  ;
+
 syntax ContentSpecifier 
-  = ContentSpecifierId "(" { ContentModifier "," }* ")"
+  = specifier: ContentSpecifierId name "(" { ContentModifier "," }* ")"
   ;
 
 syntax ContentModifier 
@@ -70,23 +74,15 @@ syntax Specification
   = string: String // normalize to const(int/str)
   | number: Number
   | field: Id name
-  | field: Id struct "." Id name;
-
- 
-syntax FieldSpecifier = ValueListSpecifier FormatSpecifier*
-                      | FormatSpecifier+;
-
-syntax ValueListSpecifier = ValueModifier* { Expression "," }+
-                          | ValueModifier* ContentSpecifier;
+  | field: Id struct "." Id name
+  ;
 
 syntax Modifier 
-  = required:  /* required */ 
-  | expected: "expected"
+  //= required:  /* required */ 
+  = expected: "expected"
   // TODO: normalize to terminator 
   | terminatedBefore: "terminatedBefore" 
   | terminatedBy: "terminatedBy";
-
-
 
 
 syntax Bool
@@ -94,18 +90,18 @@ syntax Bool
   | "false"
   ;
 
-syntax Qualifiers = @Foldable Qualifier*;
-syntax Structures = @Foldable "structures" Structure*;
-syntax Sequence = @Foldable "sequence" Symbol*;
+//syntax Qualifiers = @Foldable Qualifier*;
+//syntax Structures = @Foldable "structures" Structure*;
+//syntax Sequence = @Foldable "sequence" DSymbol*;
 
 
 
 lexical ContentSpecifierId = @category="Todo" Id;
 lexical ExpressionId = @category="Identifier" Id id;
-lexical Number = @category="Constant" hex: [0][xX][a-f A-F 0-9]+ !>> [a-f A-F 0-9]
-              |  @category="Constant" bin: [0][bB][0-1]+ !>> [0-1]
-              |  @category="Constant" oct: [0][oO][0-7]+ !>> [0-7]
-              |  @category="Constant" dec: [0-9]+ !>> [0-9];
+lexical Number = @category="Constant" hex: ([0][xX][a-f A-F 0-9]+) !>> [a-f A-F 0-9]
+              |  @category="Constant" bin: ([0][bB][0-1]+) !>> [0-1]
+              |  @category="Constant" oct: ([0][oO][0-7]+) !>> [0-7]
+              |  @category="Constant" dec: [0-9]+ !>> [0-9xXbBoO];
 lexical String = @category="Constant" "\"" ![\"]*  "\"";
 lexical Comment = @category="Comment" "/*" CommentChar* "*/";
 lexical CommentChar = ![*] | [*] !>> [/];
@@ -141,7 +137,7 @@ keyword DerricKeywords =
  | "sequence"
  | "structures"
  | "unit" | "sign" | "endian" | "strings" | "type"
- | "big" | "little" | "true" | "false" | "byte" | "bit" | "ascii" | "utf8" | "integer" | "float" | "string"
+ | "true" | "false" // | "integer" | "float" | "string"
  | "size"
  | "expected" | "terminatedBefore" | "terminatedBy"
  | "lengthOf" | "offset";
