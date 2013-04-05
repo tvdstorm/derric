@@ -12,8 +12,9 @@ import IO;
 
 FileFormat normalize(FileFormat f) {
   return visit (f) {
-    case x:field(str n) => field(n, [], [], noValue())[@location=x@location]
-
+    // NB: type is needed here!! field(str n) is also in Specification
+    case Field field(str n): insert field(n, [], [], noValue())[@location=x@location];
+    
     case x:field(n, list[FieldModifier] fms) =>
         field(n, modifiers(fms), qualifiers(fms), content(fms)[0])[@location=x@location]
       when content(fms) != []
@@ -25,8 +26,10 @@ FileFormat normalize(FileFormat f) {
     case x:field(n, list[FieldModifier] fms) =>
         field(n, modifiers(fms), qualifiers(fms), expressions(fms))[@location=x@location]
 
-    case Field x: {println("Not normalized: "); iprintln(x); }
+    case Field x => field(x.name, [], [], noValue())[@location=x@location]
+      when !(x has fmodifiers)
 
+    case Field x: {println("Not normalized: "); iprintln(x); }
         
     case Specification x:number(s) => const(makeInt(s))[@location=x@location]
     case Specification x:string(s) => const(makeString(s))[@location=x@location]

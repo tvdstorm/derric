@@ -135,7 +135,6 @@ public Validator build(FileFormat format) {
 		struct = t.name;
 		statements = [];
 		for (f <- t.fields) {
-		    println("BUILDING field: <f>");
 			buildStatements(f);
 		}
 		structures += structure(t.name, statements)[@location=t@location];

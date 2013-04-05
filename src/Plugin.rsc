@@ -22,6 +22,7 @@ import util::IDE;
 import util::Prompt;
 import ParseTree;
 import Message;
+import lang::derric::FileFormat;
 import lang::derric::BuildFileFormat;
 import lang::derric::DesugarFileFormat;
 import lang::derric::CheckFileFormat;
@@ -69,7 +70,7 @@ public void main() {
       ast = build(pt);
       ast = annotate(propagateConstants(desugar(propagateDefaults(ast))));
       Validator validator = build(ast);
-      writeFile(|project://<javaPathPrefix><toUpperCase(format.name)><javaClassSuffix><javaFileSuffix>|, 
+      writeFile(|project://<javaPathPrefix><toUpperCase(ast.name)><javaClassSuffix><javaFileSuffix>|, 
              generate(ast.sequence, ast.extensions[0], validator, javaPackageName));
       return {};
     }),
@@ -77,7 +78,7 @@ public void main() {
     popup(menu("Derric", [
     
     action("Generate Factory", void (Tree tree, loc selection) {
-      generated = [ load(f) | f <- getDerrics() ];
+      generated = [ loadProcessed(f) | f <- getDerrics() ];
       rel[str, str] mapping = { <s, toUpperCase(f.name) + javaClassSuffix> | f <- generated, s <- f.extensions };
       println("Generating Factory");
        writeFile(|project://<javaPathPrefix><javaClassSuffix>Factory<javaFileSuffix>|, generate(mapping));
@@ -85,22 +86,16 @@ public void main() {
     
     action("Compile all", void (Tree tree, loc selection) {
       for (f <- getDerrics()) {
-        ast = load(f);
+        ast = loadProcessed(f);
         Validator validator = build(ast);
         writeFile(|project://<javaPathPrefix><toUpperCase(ast.name)><javaClassSuffix><javaFileSuffix>|, 
-             generate(format.sequence, ast.extensions[0], validator, javaPackageName));
+             generate(ast.sequence, ast.extensions[0], validator, javaPackageName));
       }
     }),
     
-    edit("Rename structure...", str (start[FileFormat] pt, loc selection) {
+    edit("Rename structure...(not working)", str (start[FileFormat] pt, loc selection) {
        newName = prompt("Enter new name: ");
        return unparse(rename(pt, selection, newName));
-    }),
-    
-    action("Visualize", void (Tree tree, loc selection) {
-      ast = build(tree);
-      fig = formatToFigure(format);
-      render(fig);
     })
     
     ])),
@@ -109,7 +104,6 @@ public void main() {
     annotator(Tree (Tree pt) {
       ast = build(pt);
       msgs = check(ast);
-      println("msgs = <msgs>");
       pt = xrefFormat(pt);
       return pt[@messages=msgs];
     }),
@@ -125,7 +119,7 @@ public void main() {
 
 
 
-public lang::derric::FileFormat::FileFormat load(loc path) {
+public lang::derric::FileFormat::FileFormat loadProcessed(loc path) {
     ast = load(path);
     println("Imploded AST:             <ast>");
     ast = propagateDefaults(ast);
