@@ -40,4 +40,5 @@ public enum BitOrder {
 
 	public abstract void apply(byte[] b);
 	public abstract byte apply(byte b);
+	
 }
