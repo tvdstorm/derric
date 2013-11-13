@@ -37,6 +37,11 @@ NameGraph gifNames() = resolveNames(gifAST());
 str gifCompiled() = compile(gifAST()); 
 
 
+FileFormat badAST() = myLoad(|project://derric/formats/bad.derric|);
+NameGraph badNames() = resolveNames(badAST());
+str badCompiled() = compile(badAST()); 
+
+
 str compile(FileFormat f) {
   f = preprocess(f); // NB: don't inline.
   return generate(f.sequence, f.extensions[0], build(f), javaPackageName);
