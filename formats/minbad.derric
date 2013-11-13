@@ -16,8 +16,8 @@ sequence
 structures
 
 SomeStruct {
-  name: "Jeroen";
-  name_s2: 0x0;
+  name: "xyz";
+  second: 0x0;
   someRef: SomeStruct_name.s3;
 }
 

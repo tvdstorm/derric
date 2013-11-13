@@ -16,35 +16,64 @@ import lang::derric::GenerateJava;
 import lang::derric::GenerateFactoryJava;
 import ParseTree;
 import String;
+import IO;
 
 str javaPackageName = "org.derric_lang.validator.generated";
 str javaPathPrefix = "/" + replaceAll(javaPackageName, ".", "/") + "/";
 str javaClassSuffix = "Validator";
 str javaFileSuffix = ".java";
-
+str outputProject = "generated-derric";
 
 FileFormat jpegAST() = myLoad(|project://derric/formats/jpeg.derric|);
 NameGraph jpegNames() = resolveNames(jpegAST());
 str jpegCompiled() = compile(jpegAST()); 
+
+void writeCompiled(FileFormat f) {
+  src = compile(f);
+  orgs = origins(src);
+  classPrefix = toUpperCase(f.name);
+  writeFile(|project://<outputProject>/src<javaPathPrefix><classPrefix>Validator.java|, src);
+  writeFile(|project://<outputProject>/src<javaPathPrefix><classPrefix>Validator.origins|, orgs);
+}
+
+void writeJPEGCompiled() {
+  writeCompiled(jpegAST());
+}
 
 
 FileFormat pngAST() = myLoad(|project://derric/formats/png.derric|);
 NameGraph pngNames() = resolveNames(pngAST());
 str pngCompiled() = compile(pngAST()); 
 
+void writePNGCompiled() {
+  writeCompiled(pngAST());
+}
+
 FileFormat gifAST() = myLoad(|project://derric/formats/gif.derric|);
 NameGraph gifNames() = resolveNames(gifAST());
 str gifCompiled() = compile(gifAST()); 
+
+void writeGIFCompiled() {
+  writeCompiled(gifAST());
+}
 
 
 FileFormat minbadAST() = myLoad(|project://derric/formats/minbad.derric|);
 NameGraph minbadNames() = resolveNames(minbadAST());
 str minbadCompiled() = compile(minbadAST()); 
 
+void writeMinbadCompiled() {
+  writeCompiled(minbadAST());
+}
+
 
 FileFormat badAST() = myLoad(|project://derric/formats/bad.derric|);
 NameGraph badNames() = resolveNames(badAST());
 str badCompiled() = compile(badAST()); 
+
+void writeBADCompiled() {
+  writeCompiled(badAST());
+}
 
 
 str compile(FileFormat f) {
