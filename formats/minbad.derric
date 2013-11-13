@@ -1,0 +1,27 @@
+format Minbad
+extension jpeg jpg jfif
+
+unit byte
+size 1
+sign false
+type integer
+endian big
+strings ascii
+
+
+sequence
+  SomeStruct
+  SomeStruct_name
+  
+structures
+
+SomeStruct {
+  name: "Jeroen";
+  name_s2: 0x0;
+  someRef: SomeStruct_name.s3;
+}
+
+SomeStruct_name {
+  s3;
+}
+

@@ -37,6 +37,11 @@ NameGraph gifNames() = resolveNames(gifAST());
 str gifCompiled() = compile(gifAST()); 
 
 
+FileFormat minbadAST() = myLoad(|project://derric/formats/minbad.derric|);
+NameGraph minbadNames() = resolveNames(minbadAST());
+str minbadCompiled() = compile(minbadAST()); 
+
+
 FileFormat badAST() = myLoad(|project://derric/formats/bad.derric|);
 NameGraph badNames() = resolveNames(badAST());
 str badCompiled() = compile(badAST()); 
