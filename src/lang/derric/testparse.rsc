@@ -37,7 +37,7 @@ import lang::derric::Validator;
 import lang::derric::BuildValidator;
 import lang::derric::GenerateJava;
 import lang::derric::GenerateFactoryJava;
-import lang::derric::ExecuteValidator;
+//import lang::derric::ExecuteValidator;
 
 str javaPackageName = "org.derric_lang.validator.generated";
 str javaPathPrefix = "/" + replaceAll(javaPackageName, ".", "/") + "/";
@@ -72,6 +72,12 @@ private list[str] enumerateDerricDescriptions() {
 	}
 }
 
+str compileDerric(loc path) {
+	FileFormat format = load(path);
+    Validator validator = build(format);
+    return generate(format.sequence, format.extensions[0], validator, javaPackageName);
+}
+
 public void generate(loc path) {
 	try {
 		FileFormat format = load(path);
@@ -102,7 +108,7 @@ public tuple[bool, list[tuple[str, loc, loc, loc, list[tuple[str, loc, loc]]]]] 
 }
 
 public FileFormat load(loc path) {
-	FileFormat format = build(parse(#start[Format], path).top);
+	FileFormat format = build(parse(#start[FileFormat], path).top);
 	println("Imploded AST:             <format>");
 	set[Message] messages = check(format);
 	bool error = false;

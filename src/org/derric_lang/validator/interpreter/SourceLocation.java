@@ -2,12 +2,12 @@ package org.derric_lang.validator.interpreter;
 
 import java.net.URI;
 
+import org.eclipse.imp.pdb.facts.IAnnotatable;
 import org.eclipse.imp.pdb.facts.ISourceLocation;
 import org.eclipse.imp.pdb.facts.IValue;
 import org.eclipse.imp.pdb.facts.type.Type;
 import org.eclipse.imp.pdb.facts.type.TypeFactory;
 import org.eclipse.imp.pdb.facts.visitors.IValueVisitor;
-import org.eclipse.imp.pdb.facts.visitors.VisitorException;
 
 public class SourceLocation implements ISourceLocation {
 	
@@ -26,10 +26,9 @@ public class SourceLocation implements ISourceLocation {
 		return TypeFactory.getInstance().sourceLocationType();
 	}
 
-	@Override
-	public <T> T accept(IValueVisitor<T> v) throws VisitorException {
-		return v.visitSourceLocation(this);
-	}
+//	public <T,E extends Throwable> T accept(IValueVisitor<T, E> v) throws E {
+//		return v.visitSourceLocation(this);
+//	}
 
 	@Override
 	public boolean isEqual(IValue other) {
@@ -87,5 +86,77 @@ public class SourceLocation implements ISourceLocation {
 	@Override
 	public int getEndColumn() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <T, E extends Throwable> T accept(IValueVisitor<T, E> v) throws E {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isAnnotatable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IAnnotatable<? extends IValue> asAnnotatable() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getScheme() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAuthority() throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPath() throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getFragment() throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getQuery() throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean hasAuthority() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean hasPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean hasFragment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean hasQuery() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

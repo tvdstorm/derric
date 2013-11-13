@@ -22,16 +22,16 @@ import List;
 data FileFormat 
   = format(str name, list[str] extensions, 
        list[Qualifier] defaults, 
-       list[Symbol] sequence, 
+       list[DSymbol] sequence, 
        list[Term] terms);
 
-data Symbol 
+data DSymbol 
   = term(str name)
-  | optional(Symbol symbol)
-  | iter(Symbol symbol)
-  | not(Symbol symbol)
-  | anyOf(set[Symbol] symbols)
-  | seq(list[Symbol] sequence)
+  | optional(DSymbol symbol)
+  | iter(DSymbol symbol)
+  | not(DSymbol symbol)
+  | anyOf(set[DSymbol] symbols)
+  | seq(list[DSymbol] sequence)
   ;
 
 data Qualifier 
@@ -108,7 +108,7 @@ data Expression
 	;
 	
 anno loc FileFormat@location;
-anno loc Symbol@location;
+anno loc DSymbol@location;
 anno loc Qualifier@location;
 anno loc Term@location;
 anno loc Field@location;

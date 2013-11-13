@@ -1,0 +1,39 @@
+
+TODO: deal with name *errors* in result
+
+Synth names
+
+allowEOF
+_currentSymbol
+_input
+
+top[0-9]
+
+clearSubsequence
+
+markStart
+
+<struct>_<fieldName>_[0-9]+ (indices for subfields)
+ 
+<struct>_<fieldName>_s[0-9]+ (when field is string)
+e.g.
+ APP0JFIF_identifier_s2; --> problem when using non-string field identifier_s
+ identifier: "abc"
+ identifier_s1: 0x0;
+
+Constants in ByteOrder
+BIG_ENDIAN ---> problem!
+LITTLE_ENDIAN
+
+BitOrder
+MSB_FIRST
+LSB_FIRST
+
+
+addSubSequence
+vs[0-9]+ (value sets)
+
+
+
+
+

@@ -297,11 +297,11 @@ private list[str] getPrecedingFieldNames(str name, list[Field] fields) {
 private FileFormat removeNot(FileFormat format) {
 	return visit (format) {
 		case n:not(t:term(str name)) => invert(format, {t})[@location=n@location]
-		case n:not(anyOf(set[Symbol] symbols)) => invert(format, symbols)[@location=n@location]
+		case n:not(anyOf(set[DSymbol] symbols)) => invert(format, symbols)[@location=n@location]
 	}
 }
 
-public Symbol invert(FileFormat format, set[Symbol] symbols) {
+public DSymbol invert(FileFormat format, set[DSymbol] symbols) {
 	exclude = for (term(str n) <- symbols) {
 		append n;
 	}
@@ -318,11 +318,11 @@ private FileFormat normalizeSequence(FileFormat format) {
 			case t:term(str name) => anyOf({seq([term(name)[@location=t@location]])[@location=t@location]})[@location=t@location]
 			case p:optional(t:term(str name)) => anyOf({seq([term(name)[@location=t@location]])[@location=p@location], seq([])[@location=p@location]})[@location=p@location]
 			case i:iter(t:term(str name)) => iter(anyOf({seq([term(name)[@location=t@location]])})[@location=i@location])[@location=i@location]
-			case a:anyOf(set[Symbol] symbols) => anyOf({ seq([s])[@location=s@location] | s <- symbols, !(seq(list[Symbol] syms) := s)} + { s | s <- symbols, seq(list[Symbol] syms) := s})[@location=a@location]
-			case i:iter(a:anyOf(set[Symbol] symbols)) => iter(anyOf({ seq([s])[@location=s@location] | s <- symbols, !(seq(list[Symbol] syms) := s)} + { s | s <- symbols, seq(list[Symbol] syms) := s})[@location=a@location])[@location=i@location]
-			case s:seq(list[Symbol] symbols) => anyOf({seq(symbols)[@location=s@location]} + { s | s <- symbols, seq(list[Symbol] syms) := s})[@location=s@location]
-			case i:iter(s:seq(list[Symbol] symbols)) => iter(anyOf({seq(symbols)[@location=s@location]})[@location=i@location])[@location=i@location]
-			case p:optional(s:seq(list[Symbol] symbols)) => anyOf({seq(symbols)[@location=s@location], seq([])[@location=p@location]})[@location=p@location]
-			case p:optional(a:anyOf(set[Symbol] symbols)) => anyOf({ seq([s])[@location=s@location] | s <- symbols, !(seq(list[Symbol] syms) := s)} + { s | s <- symbols, seq(list[Symbol] syms) := s} + {seq([])[@location=p@location]})[@location=a@location]
+			case a:anyOf(set[DSymbol] symbols) => anyOf({ seq([s])[@location=s@location] | s <- symbols, !(seq(list[DSymbol] syms) := s)} + { s | s <- symbols, seq(list[DSymbol] syms) := s})[@location=a@location]
+			case i:iter(a:anyOf(set[DSymbol] symbols)) => iter(anyOf({ seq([s])[@location=s@location] | s <- symbols, !(seq(list[DSymbol] syms) := s)} + { s | s <- symbols, seq(list[DSymbol] syms) := s})[@location=a@location])[@location=i@location]
+			case s:seq(list[DSymbol] symbols) => anyOf({seq(symbols)[@location=s@location]} + { s | s <- symbols, seq(list[DSymbol] syms) := s})[@location=s@location]
+			case i:iter(s:seq(list[DSymbol] symbols)) => iter(anyOf({seq(symbols)[@location=s@location]})[@location=i@location])[@location=i@location]
+			case p:optional(s:seq(list[DSymbol] symbols)) => anyOf({seq(symbols)[@location=s@location], seq([])[@location=p@location]})[@location=p@location]
+			case p:optional(a:anyOf(set[DSymbol] symbols)) => anyOf({ seq([s])[@location=s@location] | s <- symbols, !(seq(list[DSymbol] syms) := s)} + { s | s <- symbols, seq(list[DSymbol] syms) := s} + {seq([])[@location=p@location]})[@location=a@location]
 	}
 }

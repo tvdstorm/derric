@@ -35,23 +35,23 @@ private int getNextLabel() {
 	return label;
 }
 
-public str generateSymbol(s:iter(anyOf(set[Symbol] symbols))) {
+public str generateSymbol(s:iter(anyOf(set[DSymbol] symbols))) {
 	return "top<getNextLabel()>: for (;;) {\n<generateEOFCheck(s@allowEOF)><generateAnyOfSymbols(symbols, true)>mergeSubSequence();break top<label>;\n}\n";
 }
 
-public str generateSymbol(s:anyOf(set[Symbol] symbols)) {
+public str generateSymbol(s:anyOf(set[DSymbol] symbols)) {
 	return "top<getNextLabel()>: for (;;) {\n<generateEOFCheck(s@allowEOF)><generateAnyOfSymbols(symbols, false)><containsEmptyList(symbols) ? "mergeSubSequence();break top<label>" : "return no()">;\n}\n";
 }
 
-public default str generateSymbol(Symbol symbol) {
+public default str generateSymbol(DSymbol symbol) {
 	return "// skipped: <symbol>\n";
 }
 
-private str generateAnyOfSymbols(set[Symbol] symbols, bool iterate) {
+private str generateAnyOfSymbols(set[DSymbol] symbols, bool iterate) {
 	str res = "";
 	str fin = "";
 
-	void generateAnyOfSymbol(Symbol s, bool final) {
+	void generateAnyOfSymbol(DSymbol s, bool final) {
 		//println("generating: <s>");
 		str breakTarget = final ? "mergeSubSequence();<iterate ? "continue" : "break"> top<label>" : "break";
 		str continueStatement = final ? "mergeSubSequence();continue" : "continue";
@@ -71,7 +71,7 @@ private str generateAnyOfSymbols(set[Symbol] symbols, bool iterate) {
 		}
 	}
 
-	for (seq(list[Symbol] sequence) <- symbols) {
+	for (seq(list[DSymbol] sequence) <- symbols) {
 		//println("generating: <sequence>");
 		sequence = reverse(sequence);
 		bool innerMost = true;
@@ -89,8 +89,8 @@ private str generateAnyOfSymbols(set[Symbol] symbols, bool iterate) {
 	return fin;
 }
 
-private bool containsEmptyList(set[Symbol] symbols) {
-	for (seq(list[Symbol] sequence) <- symbols) {
+private bool containsEmptyList(set[DSymbol] symbols) {
+	for (seq(list[DSymbol] sequence) <- symbols) {
 		if (size(sequence) == 0) {
 			return true;
 		}

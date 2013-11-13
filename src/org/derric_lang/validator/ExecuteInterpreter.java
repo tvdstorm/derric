@@ -126,7 +126,7 @@ public class ExecuteInterpreter {
 			if (cons != null) {
 				//System.out.println("Constructed Constructor: " + cons);
 				Object ins = cons.newInstance(args.toArray());
-				Map<String, IValue> ans = cval.getAnnotations();
+				Map<String, IValue> ans = cval.asAnnotatable().getAnnotations();
 				//if (ans.size() > 0) {
 				//	System.out.println("Annotations on " + typeName + ":" + ans);
 				//}

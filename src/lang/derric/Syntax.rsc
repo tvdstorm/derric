@@ -21,15 +21,15 @@ start syntax FileFormat
   = @Foldable format: "format" Id name 
       "extension" Id+ extensions 
       Qualifier* defaults
-      "sequence" Symbol* sequence 
+      "sequence" DSymbol* sequence 
       "structures" Term* terms;
 
-syntax Symbol 
-  = anyOf: "(" Symbol+ ")"
-  | seq: "[" Symbol* "]"
-  | right not: "!" Symbol
-  > iter: Symbol "*"
-  | optional: Symbol "?"
+syntax DSymbol 
+  = anyOf: "(" DSymbol+ ")"
+  | seq: "[" DSymbol* "]"
+  | right not: "!" DSymbol
+  > iter: DSymbol "*"
+  | optional: DSymbol "?"
   | term: Id
   ;
 
@@ -92,7 +92,7 @@ lexical Bool
 
 //syntax Qualifiers = @Foldable Qualifier*;
 //syntax Structures = @Foldable "structures" Structure*;
-//syntax Sequence = @Foldable "sequence" Symbol*;
+//syntax Sequence = @Foldable "sequence" DSymbol*;
 
 
 

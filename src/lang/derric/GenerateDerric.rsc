@@ -55,7 +55,7 @@ public str generate(FileFormat format) {
 	}
 	
 	res += "sequence\n";
-	for (Symbol s <- format.sequence) {
+	for (DSymbol s <- format.sequence) {
 		res += "  <writeSymbol(s)>\n";
 	}
 
@@ -164,14 +164,14 @@ private str writeSpecification(list[Specification] ls) {
 	return ret;
 }
 
-public str writeSymbol(Symbol s) {
+public str writeSymbol(DSymbol s) {
 	switch(s) {
 		case term(str name): return name;
-		case optional(Symbol symbol): return "<writeSymbol(symbol)>?";
-		case iter(Symbol symbol): return "<writeSymbol(symbol)>*";
-		case not(Symbol symbol): return "!<writeSymbol(symbol)>";
-		case anyOf(set[Symbol] symbols): return "(<("" | it + " " + symbol | sym <- symbols, symbol := writeSymbol(sym))> )";
-		case seq(list[Symbol] symbolSequence): return "[<("" | it + " " + symbol | sym <- symbolSequence, symbol := writeSymbol(sym))> ]";
+		case optional(DSymbol symbol): return "<writeSymbol(symbol)>?";
+		case iter(DSymbol symbol): return "<writeSymbol(symbol)>*";
+		case not(DSymbol symbol): return "!<writeSymbol(symbol)>";
+		case anyOf(set[DSymbol] symbols): return "(<("" | it + " " + symbol | sym <- symbols, symbol := writeSymbol(sym))> )";
+		case seq(list[DSymbol] symbolSequence): return "[<("" | it + " " + symbol | sym <- symbolSequence, symbol := writeSymbol(sym))> ]";
 	}
 }
 

@@ -23,7 +23,7 @@ import Set;
 
 import lang::derric::FileFormat;
 
-anno bool Symbol @ allowEOF;
+anno bool DSymbol @ allowEOF;
 
 data Reference = local() | global();
 data Dependency = dependency(str name);
@@ -39,7 +39,7 @@ public FileFormat annotate(FileFormat format) {
 public FileFormat annotateSymbols(FileFormat format) {
 	bool allowEOF = true;
 	for (i <- [size(format.sequence)-1..-1]) {
-		if (anyOf(set[Symbol] symbols) := format.sequence[i]) {
+		if (anyOf(set[DSymbol] symbols) := format.sequence[i]) {
 			if (seq([]) notin symbols) {
 				allowEOF = false;
 			}

@@ -69,5 +69,5 @@ private set[Message] checkUndefinedSourceNames(FileFormat f) {
 
 private set[Message] checkNotEverythingInSequence(FileFormat f) {
 	set[str] structs = { t.name | t <- f.terms };
-	return { error("Not symbol resolves to empty set", s@location) | s <- {s1 | /s1:not(term(_)) <- f.sequence, size(structs) == 1} + { sn | /sn:not(anyOf(set[Symbol] symbols)) <- f.sequence, size(structs) == size(symbols)} };
+	return { error("Not symbol resolves to empty set", s@location) | s <- {s1 | /s1:not(term(_)) <- f.sequence, size(structs) == 1} + { sn | /sn:not(anyOf(set[DSymbol] symbols)) <- f.sequence, size(structs) == size(symbols)} };
 }

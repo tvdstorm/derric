@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.derric_lang.validator.generated.ValidatorFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,14 +60,14 @@ public class TestGeneratedValidators {
 	private String getExtension(String path) {
 		return path.substring(path.lastIndexOf(".") + 1).toLowerCase();
 	}
-
-	@Test
-	public void testGeneratedValidator() {
-		Validator validator = ValidatorFactory.create(getExtension(_name));
-		ValidatorInputStream stream = ValidatorInputStreamFactory.create(_name);
-		validator.setStream(stream);
-		ParseResult result = validator.tryParse();
-		Assert.assertTrue("Parsing failed. " + validator.getClass() + " on " + _name + ". Last read: " + result.getLastRead() + "; Last location: " + result.getLastLocation() + "; Last symbol: " + result.getSymbol() + "; Sequence: " + result.getSequence(), result.isSuccess());
-	}
+//
+//	@Test
+//	public void testGeneratedValidator() {
+//		Validator validator = ValidatorFactory.create(getExtension(_name));
+//		ValidatorInputStream stream = ValidatorInputStreamFactory.create(_name);
+//		validator.setStream(stream);
+//		ParseResult result = validator.tryParse();
+//		Assert.assertTrue("Parsing failed. " + validator.getClass() + " on " + _name + ". Last read: " + result.getLastRead() + "; Last location: " + result.getLastLocation() + "; Last symbol: " + result.getSymbol() + "; Sequence: " + result.getSequence(), result.isSuccess());
+//	}
 
 }
