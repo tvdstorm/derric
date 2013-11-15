@@ -18,6 +18,8 @@ import ParseTree;
 import String;
 import IO;
 
+import lang::java::jdt::m3::Core;
+
 str javaPackageName = "org.derric_lang.validator.generated";
 str javaPathPrefix = "/" + replaceAll(javaPackageName, ".", "/") + "/";
 str javaClassSuffix = "Validator";
@@ -85,3 +87,15 @@ FileFormat preprocess(FileFormat f)
   = annotate(propagateConstants(desugar(propagateDefaults(f))));
 
 FileFormat myLoad(loc path) = build(parse(#start[FileFormat], path).top);
+
+
+NameGraph m3toNameGraph(M3 m) {
+  Edges e = ( {x}: {y} | <x, y> <- m@uses o m@declarations );
+  
+  map[ID, str] n = ( m@declarations[x]: n | <str n, loc x>  <- m@names );
+  
+  set[ID] v = { {x} | x <- m@uses<0> + m@declarations<1> };
+  
+  return <v, e, n>;
+  
+}

@@ -8,20 +8,20 @@ type integer
 endian big
 strings ascii
 
+/* This program generates a name-correct Java program, but with the wrong semantics. */
 
 sequence
-  SomeStruct
-  SomeStruct_name
+  S1
+  S2
   
 structures
 
-SomeStruct {
-  name: "xyz";
-  second: 0x0;
-  someRef: SomeStruct_name.s3;
+S1 {
+  x: 0x0;
+  y: S2.x;
 }
 
-SomeStruct_name {
-  s3;
+S2 {
+  x ;
 }
 

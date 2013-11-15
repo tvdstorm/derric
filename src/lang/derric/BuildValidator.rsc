@@ -44,7 +44,7 @@ public Validator build(FileFormat format) {
 		if (isVariableSize(f)) {
 			// handles value=noValue(), size=Expression, @ref=none/local()/global(), @size=none/local()/global()
 			// when size=Expression, value *must* be noValue() and @refdep and @sizedep are forbidden
-			str lenName = "<struct>_<name>_len";
+			str lenName = "<name>_len";
 			Type lenType = integer(true, little(), 31);
 			if ((f@size)? && global() := f@size) globals += gdeclV(lenType, lenName)[@location=f@location][@fieldName=name];
 			else statements += ldeclV(lenType, lenName)[@location=f@location][@fieldName=name];
@@ -53,7 +53,7 @@ public Validator build(FileFormat format) {
 			statements += calc(lenName, generateExpression(struct, qualifiers[5].count))[@location=f@location][@fieldName=name];
 			for (Statement s <- frefs[struct,name,size()]) statements += s;
 			if ((f@ref)?) {
-				str bufName = "<struct>_<name>";
+				str bufName = name;
 				if (global() := f@ref) globals += gdeclB(bufName)[@location=f@location][@fieldName=name];
 				else statements += ldeclB(bufName)[@location=f@location][@fieldName=name];
 				statements += readBuffer(lenName, bufName)[@location=f@location][@fieldName=name];
@@ -67,7 +67,7 @@ public Validator build(FileFormat format) {
 			if (!(f@ref)? && !(f@refdep)? && !(f@sizedep)? && !hasValueSpecification(f)) {
 				statements += skipValue(t)[@location=f@location][@fieldName=name];
 			} else {
-				str valName = "<struct>_<name>";
+				str valName = name;
 				if ((f@ref)? && global() := f@ref) globals += gdeclV(t, valName)[@location=f@location][@fieldName=name];
 				else statements += ldeclV(t, valName)[@location=f@location][@fieldName=name];
 				statements += readValue(t, valName)[@location=f@location][@fieldName=name];
@@ -106,11 +106,11 @@ public Validator build(FileFormat format) {
 			}
 		}
 		// handles @ref=none/local()/global()
-		str valName = "<struct>_<name>";
+		str valName = name;
 		if ((f@ref)? && global() := f@ref) globals += gdeclB(valName)[@location=f@location][@fieldName=name];
 		else statements += ldeclB(valName)[@location=f@location][@fieldName=name];
 		// handles @size=none/local()/global()
-		str lenName = "<struct>_<name>_len";
+		str lenName = "<name>_len";
 		Type lenType = integer(true, little(), 31);
 		if ((f@size)? && global() := f@size) globals += gdeclV(lenType, lenName)[@location=f@location][@fieldName=name];
 		else statements += ldeclV(lenType, lenName)[@location=f@location][@fieldName=name];
@@ -146,8 +146,8 @@ public Validator build(FileFormat format) {
 private VExpression generateSpecification(str struct, Specification spec) {
 	switch (spec) {
 		case const(int i): return con(i);
-		case field(str name): return var("<struct>_<escape(name, mapping)>");
-		case field(str struct, str name): return var("<struct>_<escape(name, mapping)>");
+		case field(str name): return var("<escape(name, mapping)>");
+		case field(str struct, str name): return var("<escape(name, mapping)>");
 		default: throw "generateSpecification: unknown Specification <spec>";
 	}
 }
@@ -184,16 +184,16 @@ private Type makeType(list[Qualifier] qualifiers) {
 
 private VExpression generateExpression(str struct, Expression exp) {
 	top-down visit (exp) {
-		case ref(str name): return var("<struct>_<name>");
-		case ref(str struct, str name): return var("<struct>_<name>");
+		case ref(str name): return var(name);
+		case ref(str struct, str name): return var(name);
 		case pow(Expression base, Expression exp): return pow(generateExpression(struct, base), generateExpression(struct, exp));
 		case minus(Expression lhs, Expression rhs): return sub(generateExpression(struct, lhs), generateExpression(struct, rhs));
 		case times(Expression lhs, Expression rhs): return fac(generateExpression(struct, lhs), generateExpression(struct, rhs));
 		case add(Expression lhs, Expression rhs): return add(generateExpression(struct, lhs), generateExpression(struct, rhs));
 		case divide(Expression lhs, Expression rhs): return div(generateExpression(struct, lhs), generateExpression(struct, rhs));
 		case \value(int i): return con(i);
-		case lengthOf(str name): return var("<struct>_<name>_len");
-		case lengthOf(str struct, str name): return var("<struct>_<name>_len");
+		case lengthOf(str name): return var("<name>_len");
+		case lengthOf(str struct, str name): return var("<name>_len");
 		case negate(Expression exp): return neg(generateExpression(struct, exp));
 		case not(Expression exp): return not(generateExpression(struct, exp));
 		case range(Expression lower, Expression upper): return range(generateExpression(struct, lower), generateExpression(struct, upper));
